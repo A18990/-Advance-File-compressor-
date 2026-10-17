@@ -1,0 +1,98 @@
+import { QuickPreset } from '../types';
+
+export const QUICK_PRESETS: QuickPreset[] = [
+  {
+    id: 'gov-exam-20kb',
+    label: 'Gov / Exam (< 20 KB)',
+    description: 'Strict limit under 20KB for official application portals & exam admit cards',
+    category: 'government',
+    settings: {
+      targetMode: 'exact-kb',
+      targetKb: 20,
+      format: 'image/jpeg',
+      maxWidth: 600,
+      maxHeight: 600,
+      grayscale: false,
+    },
+  },
+  {
+    id: 'gov-exam-50kb',
+    label: 'Job / Visa (< 50 KB)',
+    description: 'Strict limit under 50KB for visa forms, job portals, and identity documents',
+    category: 'government',
+    settings: {
+      targetMode: 'exact-kb',
+      targetKb: 50,
+      format: 'image/jpeg',
+      maxWidth: 800,
+      maxHeight: 800,
+      grayscale: false,
+    },
+  },
+  {
+    id: 'passport-photo',
+    label: 'Passport (600×600 px)',
+    description: 'Standard 2×2 inch / 600×600 px square photo under 100KB, 300 DPI',
+    category: 'government',
+    settings: {
+      targetMode: 'exact-kb',
+      targetKb: 90,
+      format: 'image/jpeg',
+      maxWidth: 600,
+      maxHeight: 600,
+      dpi: 300,
+      maintainAspect: true,
+    },
+  },
+  {
+    id: 'signature-bw',
+    label: 'Signature (< 10 KB)',
+    description: 'High-contrast clean background monochrome signature for forms & signing',
+    category: 'document',
+    settings: {
+      targetMode: 'exact-kb',
+      targetKb: 10,
+      format: 'image/jpeg',
+      maxWidth: 400,
+      maxHeight: 200,
+      grayscale: true,
+    },
+    docSettings: {
+      filter: 'scan-bw',
+      threshold: 145,
+      contrast: 40,
+    },
+  },
+  {
+    id: 'doc-scanner',
+    label: 'Document Scan (< 150 KB)',
+    description: 'Shadow removal, pure white paper background with crisp readable text',
+    category: 'document',
+    settings: {
+      targetMode: 'exact-kb',
+      targetKb: 150,
+      format: 'image/jpeg',
+      maxWidth: 1600,
+      maxHeight: 2200,
+    },
+    docSettings: {
+      filter: 'clean-paper',
+      contrast: 25,
+      brightness: 10,
+      sharpenAmount: 35,
+    },
+  },
+  {
+    id: 'web-optimized',
+    label: 'WebP Ultra Web (85% save)',
+    description: 'Next-gen WebP format with 75% quality for ultra-fast website loading',
+    category: 'web',
+    settings: {
+      targetMode: 'quality',
+      quality: 0.75,
+      format: 'image/webp',
+      maxWidth: 1920,
+      maxHeight: 1080,
+    },
+  },
+];

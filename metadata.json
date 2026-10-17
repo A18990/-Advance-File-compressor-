@@ -1,0 +1,6 @@
+{
+  "name": "Photo DecumoPress - Smart Photo & Document Compressor / Decompressor",
+  "description": "Professional browser-based photo compressor, decompressor, and document processor. Shrink photos to exact KB, restore image details, enhance documents, and batch process with 100% privacy.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
