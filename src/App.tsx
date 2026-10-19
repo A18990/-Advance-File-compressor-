@@ -15,6 +15,8 @@ import { DocumentProcessorView } from './components/DocumentProcessorView';
 import { DecompressorView } from './components/DecompressorView';
 import { BatchQueue } from './components/BatchQueue';
 import { MetadataInspectorModal } from './components/MetadataInspectorModal';
+import { DownloadFormatModal } from './components/DownloadFormatModal';
+import { SupportModal } from './components/SupportModal';
 import { FaqAndPresetsSection } from './components/FaqAndPresetsSection';
 import { processImage, formatBytes } from './utils/imageProcessor';
 import { extractImagesFromZip } from './utils/zipProcessor';
@@ -31,8 +33,9 @@ import {
   Layers,
   Sparkles,
   Info,
-  CheckCircle2,
-  Share2,
+  Download,
+  Mail,
+  User,
 } from 'lucide-react';
 
 export default function App() {
@@ -41,6 +44,8 @@ export default function App() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [inspectorItem, setInspectorItem] = useState<ProcessedItem | null>(null);
+  const [downloadModalItem, setDownloadModalItem] = useState<ProcessedItem | null>(null);
+  const [isSupportOpen, setIsSupportOpen] = useState<boolean>(false);
 
   // Settings
   const [compSettings, setCompSettings] = useState<CompressionSettings>({
@@ -313,6 +318,7 @@ export default function App() {
         currentMode={currentMode}
         onModeChange={setCurrentMode}
         onUploadClick={() => fileInputRef.current?.click()}
+        onOpenSupport={() => setIsSupportOpen(true)}
         itemCount={items.length}
       />
 
@@ -330,7 +336,7 @@ export default function App() {
             </h1>
 
             <p className="text-sm sm:text-base text-slate-400 max-w-2xl text-balance leading-relaxed">
-              Target exact file sizes (<span className="text-indigo-400 font-medium">≤ 20KB, 50KB, 100KB</span>) for exam and job portals, restore compressed details, clean phone shadows on document scans, and batch-export in seconds.
+              Target exact file sizes (<span className="text-indigo-400 font-medium">≤ 20KB, 50KB, 100KB</span>) for exam and job portals, restore compressed details, clean phone shadows on document scans, and download in any format (<strong className="text-slate-200">PDF, JPG, PNG, WebP</strong>).
             </p>
 
             {/* Drop Zone */}
@@ -345,7 +351,7 @@ export default function App() {
         ) : (
           /* Active Workspace Layout */
           <div className="space-y-6">
-            {/* Mode Switcher Tabs */}
+            {/* Mode Switcher Tabs & Actions */}
             <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-3">
               <div className="flex items-center gap-1 p-1 bg-slate-900 border border-slate-800 rounded-xl">
                 <button
@@ -383,15 +389,23 @@ export default function App() {
                 </button>
               </div>
 
-              {/* Item Metadata Inspector Trigger */}
+              {/* Quick Actions (Download in Format & Inspector) */}
               {selectedItem && (
                 <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setDownloadModalItem(selectedItem)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg shadow-sm transition-colors"
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    <span>Download As (PDF/JPG/PNG/WebP)...</span>
+                  </button>
+
                   <button
                     onClick={() => setInspectorItem(selectedItem)}
                     className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-900 hover:bg-slate-800 rounded-lg border border-slate-800 transition-colors"
                   >
                     <Info className="h-3.5 w-3.5 text-indigo-400" />
-                    <span>Inspect Raw Buffer</span>
+                    <span className="hidden sm:inline">Inspect Raw Buffer</span>
                   </button>
                 </div>
               )}
@@ -428,6 +442,7 @@ export default function App() {
                     onChange={setCompSettings}
                     onApplyPreset={handleApplyPreset}
                     onRecompress={handleApplyToAll}
+                    onOpenDownloadFormatModal={() => selectedItem && setDownloadModalItem(selectedItem)}
                     isProcessing={isProcessing}
                   />
                 )}
@@ -439,6 +454,7 @@ export default function App() {
                     settings={docSettings}
                     onChange={setDocSettings}
                     onApply={handleApplyToAll}
+                    onOpenDownloadFormatModal={(item) => setDownloadModalItem(item)}
                     isProcessing={isProcessing}
                   />
                 )}
@@ -455,7 +471,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* Batch Queue & Downloads */}
+            {/* Batch Queue & Multi-Format Downloads */}
             <BatchQueue
               items={items}
               selectedItemId={selectedItem?.id || null}
@@ -463,12 +479,13 @@ export default function App() {
               onRemoveItem={handleRemoveItem}
               onClearAll={handleClearAll}
               onAddMore={() => fileInputRef.current?.click()}
+              onOpenDownloadFormatModal={(item) => setDownloadModalItem(item)}
             />
           </div>
         )}
 
         {/* Informational Guidance, Presets & FAQ Section */}
-        <FaqAndPresetsSection />
+        <FaqAndPresetsSection onOpenSupport={() => setIsSupportOpen(true)} />
       </main>
 
       {/* Metadata Inspector Modal */}
@@ -477,14 +494,36 @@ export default function App() {
         onClose={() => setInspectorItem(null)}
       />
 
+      {/* Multi-Format Download Modal */}
+      <DownloadFormatModal
+        item={downloadModalItem}
+        onClose={() => setDownloadModalItem(null)}
+      />
+
+      {/* Developer & Support Modal */}
+      <SupportModal
+        isOpen={isSupportOpen}
+        onClose={() => setIsSupportOpen(false)}
+      />
+
       {/* Footer */}
-      <footer className="border-t border-slate-800/80 bg-slate-950 py-6 text-center text-xs text-slate-500">
+      <footer className="border-t border-slate-800/80 bg-slate-950 py-6 text-xs text-slate-500">
         <div className="mx-auto max-w-7xl px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <span>DecumoPress Studio · Professional Photo & Document Compression Engine</span>
-          <div className="flex items-center gap-4">
-            <span className="text-slate-400">100% In-Browser Canvas Pipeline</span>
+          <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-start">
+            <span>Developed by <strong className="text-slate-300 font-semibold">Aakash Pathak</strong></span>
             <span aria-hidden="true">·</span>
-            <span className="text-slate-400">RFC 2046 Compliant</span>
+            <span>Support: <a href="mailto:ramrajjnk75@gmail.com" className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2">ramrajjnk75@gmail.com</a></span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <span className="text-slate-400">100% In-Browser Privacy</span>
+            <span aria-hidden="true">·</span>
+            <button
+              onClick={() => setIsSupportOpen(true)}
+              className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
+            >
+              Contact Support
+            </button>
           </div>
         </div>
       </footer>

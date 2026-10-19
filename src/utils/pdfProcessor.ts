@@ -2,29 +2,38 @@ import { jsPDF } from 'jspdf';
 import { ProcessedItem } from '../types';
 
 /**
- * Creates a combined PDF from processed photos/documents
+ * Creates a combined PDF from processed photos/documents with automatic orientation detection
  */
 export async function exportToPdf(items: ProcessedItem[], filename: string = 'document_scan.pdf'): Promise<void> {
   const validItems = items.filter((item) => item.processedUrl || item.originalUrl);
   if (validItems.length === 0) return;
 
+  // Initialize with first item orientation
+  const firstItem = validItems[0];
+  const firstW = firstItem.processedWidth || firstItem.originalWidth;
+  const firstH = firstItem.processedHeight || firstItem.originalHeight;
+  const firstIsLandscape = firstW > firstH;
+
   const pdf = new jsPDF({
-    orientation: 'portrait',
+    orientation: firstIsLandscape ? 'landscape' : 'portrait',
     unit: 'mm',
     format: 'a4',
   });
 
-  const pageWidth = 210; // mm for A4
-  const pageHeight = 297; // mm for A4
-  const margin = 10; // mm
-
   for (let i = 0; i < validItems.length; i++) {
-    if (i > 0) pdf.addPage('a4', 'portrait');
-
     const item = validItems[i];
     const imgUrl = item.processedUrl || item.originalUrl;
     const imgW = item.processedWidth || item.originalWidth;
     const imgH = item.processedHeight || item.originalHeight;
+    const isLandscape = imgW > imgH;
+
+    const pageWidth = isLandscape ? 297 : 210;
+    const pageHeight = isLandscape ? 210 : 297;
+    const margin = 8; // mm
+
+    if (i > 0) {
+      pdf.addPage('a4', isLandscape ? 'landscape' : 'portrait');
+    }
 
     const printableWidth = pageWidth - margin * 2;
     const printableHeight = pageHeight - margin * 2;

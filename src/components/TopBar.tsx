@@ -1,11 +1,12 @@
 import React from 'react';
-import { Layers, ArrowDownToLine, Zap } from 'lucide-react';
+import { Layers, ArrowDownToLine, Mail, HelpCircle } from 'lucide-react';
 import { ProcessMode } from '../types';
 
 interface TopBarProps {
   currentMode: ProcessMode;
   onModeChange: (mode: ProcessMode) => void;
   onUploadClick: () => void;
+  onOpenSupport: () => void;
   itemCount: number;
 }
 
@@ -13,6 +14,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   currentMode,
   onModeChange,
   onUploadClick,
+  onOpenSupport,
   itemCount,
 }) => {
   return (
@@ -60,30 +62,41 @@ export const TopBar: React.FC<TopBarProps> = ({
           >
             DocuScan
           </button>
+          <button
+            onClick={onOpenSupport}
+            className="text-slate-400 hover:text-indigo-400 transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5"
+          >
+            <Mail className="h-3.5 w-3.5" />
+            <span>Developer & Support</span>
+          </button>
           <a
-            href="#presets"
+            href="#faq"
             className="text-slate-400 hover:text-slate-200 transition-colors whitespace-nowrap shrink-0"
           >
-            Exam & Gov Presets
-          </a>
-          <a
-            href="#features"
-            className="text-slate-400 hover:text-slate-200 transition-colors whitespace-nowrap shrink-0"
-          >
-            Fidelity Specs
+            Guide
           </a>
         </nav>
 
-        {/* Zone 3: 1 primary action */}
-        <div className="flex items-center gap-3 shrink-0">
+        {/* Zone 3: Actions */}
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={onOpenSupport}
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 h-8 rounded-lg border border-slate-800 bg-slate-900/80 hover:bg-slate-800 hover:border-slate-700 text-xs font-medium text-slate-300 hover:text-white transition-colors whitespace-nowrap shrink-0"
+            title="Contact Aakash Pathak (ramrajjnk75@gmail.com)"
+          >
+            <Mail className="h-3.5 w-3.5 text-indigo-400" />
+            <span>Support</span>
+          </button>
+
           <button
             onClick={onUploadClick}
-            className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 transition-colors active:scale-95 whitespace-nowrap shrink-0"
+            className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-2.5 sm:px-3 py-1.5 h-8 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 transition-colors active:scale-95 whitespace-nowrap shrink-0"
           >
-            <ArrowDownToLine className="h-4 w-4" />
-            <span>Add Photos / Zip</span>
+            <ArrowDownToLine className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Add Photos / Zip</span>
+            <span className="sm:hidden">Add Photos</span>
             {itemCount > 0 && (
-              <span className="font-mono text-xs tabular-nums bg-indigo-700/80 px-1.5 py-0.5 rounded">
+              <span className="font-mono text-[10px] tabular-nums bg-indigo-700/90 px-1.5 py-0.2 rounded">
                 {itemCount}
               </span>
             )}

@@ -31,10 +31,11 @@ export const ImageComparisonSlider: React.FC<ImageComparisonSliderProps> = ({
       if (!rect) return;
       const x = e.clientX - rect.left;
       const pct = Math.max(0, Math.min(100, (x / rect.width) * 100));
-      // If close to slider line or directly clicked
       setSliderPos(pct);
       setIsDragging(true);
-      (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+      try {
+        (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+      } catch (err) {}
     }
   };
 
@@ -63,6 +64,53 @@ export const ImageComparisonSlider: React.FC<ImageComparisonSliderProps> = ({
       window.removeEventListener('pointerup', handlePointerUp);
     };
   }, [isDragging, handlePointerMove, handlePointerUp]);
+
+  // Dedicated Mobile Touch Handlers to strictly prevent page scroll/movement while sliding
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (viewMode === 'slider' && zoom <= 1 && e.touches.length === 1) {
+        e.preventDefault(); // Stop mobile viewport scrolling
+        const touch = e.touches[0];
+        const rect = container.getBoundingClientRect();
+        const x = touch.clientX - rect.left;
+        const pct = Math.max(0, Math.min(100, (x / rect.width) * 100));
+        setSliderPos(pct);
+        setIsDragging(true);
+      }
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (isDragging && viewMode === 'slider') {
+        e.preventDefault(); // Stop mobile viewport scrolling
+        if (e.touches.length > 0) {
+          const touch = e.touches[0];
+          const rect = container.getBoundingClientRect();
+          const x = touch.clientX - rect.left;
+          const pct = Math.max(0, Math.min(100, (x / rect.width) * 100));
+          setSliderPos(pct);
+        }
+      }
+    };
+
+    const onTouchEnd = () => {
+      setIsDragging(false);
+    };
+
+    container.addEventListener('touchstart', onTouchStart, { passive: false });
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend', onTouchEnd);
+    window.addEventListener('touchcancel', onTouchEnd);
+
+    return () => {
+      container.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
+      window.removeEventListener('touchcancel', onTouchEnd);
+    };
+  }, [isDragging, viewMode, zoom]);
 
   // Pan handlers when zoomed
   const handlePanStart = (e: React.MouseEvent) => {
@@ -190,7 +238,8 @@ export const ImageComparisonSlider: React.FC<ImageComparisonSliderProps> = ({
           onMouseMove={handlePanMove}
           onMouseUp={handlePanEnd}
           onMouseLeave={handlePanEnd}
-          className="relative w-full h-[460px] sm:h-[540px] rounded-xl overflow-hidden border border-slate-800 bg-slate-900/90 select-none cursor-ew-resize flex items-center justify-center"
+          className="relative w-full h-[460px] sm:h-[540px] rounded-xl overflow-hidden border border-slate-800 bg-slate-900/90 select-none cursor-ew-resize flex items-center justify-center touch-none"
+          style={{ touchAction: 'none' }}
         >
           {/* Inner zoom container */}
           <div

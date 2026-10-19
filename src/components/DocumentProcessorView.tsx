@@ -19,6 +19,7 @@ interface DocumentProcessorViewProps {
   settings: DocumentSettings;
   onChange: (newSettings: DocumentSettings) => void;
   onApply: () => void;
+  onOpenDownloadFormatModal: (item: ProcessedItem) => void;
   isProcessing: boolean;
 }
 
@@ -28,6 +29,7 @@ export const DocumentProcessorView: React.FC<DocumentProcessorViewProps> = ({
   settings,
   onChange,
   onApply,
+  onOpenDownloadFormatModal,
   isProcessing,
 }) => {
   const updateSetting = <K extends keyof DocumentSettings>(key: K, value: DocumentSettings[K]) => {
@@ -231,28 +233,46 @@ export const DocumentProcessorView: React.FC<DocumentProcessorViewProps> = ({
         />
       </div>
 
-      {/* Document PDF Actions */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-800 pt-4">
-        <div className="text-xs text-slate-400">
-          Export cleaned document pages directly to standard A4 PDF format
+      {/* Document Download & Export Actions */}
+      <div className="flex flex-col gap-2.5 border-t border-slate-800 pt-4">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-semibold text-slate-300">Download Processed Document</span>
+          <button
+            type="button"
+            onClick={() => onOpenDownloadFormatModal(item)}
+            className="text-[11px] text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1"
+          >
+            <span>All Formats (PDF/JPG/PNG/WebP)...</span>
+          </button>
         </div>
-        <div className="flex items-center gap-2">
+
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={handleExportPdf}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition-colors shadow-sm"
+          >
+            <FileText className="h-3.5 w-3.5" />
+            <span>Download PDF</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onOpenDownloadFormatModal(item)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 transition-colors"
           >
             <Download className="h-3.5 w-3.5" />
-            <span>Export This Page as PDF</span>
+            <span>Download as JPG / PNG / WebP</span>
           </button>
+
           {allItems.length > 1 && (
             <button
               type="button"
               onClick={handleExportAllPdf}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition-colors shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-indigo-500/30 bg-indigo-950/40 hover:bg-indigo-900/40 text-xs font-semibold text-indigo-300 transition-colors"
             >
               <FileCheck className="h-3.5 w-3.5" />
-              <span>Export All ({allItems.length}) as Combined PDF</span>
+              <span>Export All ({allItems.length}) to PDF</span>
             </button>
           )}
         </div>
@@ -260,3 +280,4 @@ export const DocumentProcessorView: React.FC<DocumentProcessorViewProps> = ({
     </div>
   );
 };
+

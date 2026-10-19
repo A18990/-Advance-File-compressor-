@@ -8,6 +8,7 @@ interface CompressorControlsProps {
   onChange: (newSettings: CompressionSettings) => void;
   onApplyPreset: (preset: QuickPreset) => void;
   onRecompress: () => void;
+  onOpenDownloadFormatModal?: () => void;
   isProcessing: boolean;
 }
 
@@ -16,6 +17,7 @@ export const CompressorControls: React.FC<CompressorControlsProps> = ({
   onChange,
   onApplyPreset,
   onRecompress,
+  onOpenDownloadFormatModal,
   isProcessing,
 }) => {
   const updateSetting = <K extends keyof CompressionSettings>(
@@ -256,6 +258,20 @@ export const CompressorControls: React.FC<CompressorControlsProps> = ({
           />
         </button>
       </div>
+
+      {/* Download in Any Format Trigger */}
+      {onOpenDownloadFormatModal && (
+        <div className="border-t border-slate-800 pt-3">
+          <button
+            type="button"
+            onClick={onOpenDownloadFormatModal}
+            className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition-colors shadow-sm"
+          >
+            <span>Download in Format (PDF / JPG / PNG / WebP)</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 };
+
